@@ -19,11 +19,11 @@ namespace MathMiniGames.Forms
 
         private void StartGame_Click(object sender, EventArgs e)
         {
-            DifficultyForm difficultyForm = new DifficultyForm();
-            difficultyForm.Show();
+            GameListForm gameListForm = new GameListForm();
+            gameListForm.Show();
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void RaytingFormBtn_Click(object sender, EventArgs e)
         {
             RatingForm ratingForm = new RatingForm();
             ratingForm.Show();

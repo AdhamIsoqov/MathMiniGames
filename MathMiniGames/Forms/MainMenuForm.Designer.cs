@@ -30,8 +30,8 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.StartGame = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
+            this.RaytingFormBtn = new System.Windows.Forms.Button();
+            this.LogoutBtn = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -58,40 +58,40 @@
             this.StartGame.UseVisualStyleBackColor = false;
             this.StartGame.Click += new System.EventHandler(this.StartGame_Click);
             // 
-            // button2
+            // RaytingFormBtn
             // 
-            this.button2.BackColor = System.Drawing.Color.Goldenrod;
-            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button2.ForeColor = System.Drawing.Color.White;
-            this.button2.Location = new System.Drawing.Point(451, 623);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(230, 59);
-            this.button2.TabIndex = 2;
-            this.button2.Text = "Reytingni ko‘rish";
-            this.button2.UseVisualStyleBackColor = false;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.RaytingFormBtn.BackColor = System.Drawing.Color.Goldenrod;
+            this.RaytingFormBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.RaytingFormBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.RaytingFormBtn.ForeColor = System.Drawing.Color.White;
+            this.RaytingFormBtn.Location = new System.Drawing.Point(451, 623);
+            this.RaytingFormBtn.Name = "RaytingFormBtn";
+            this.RaytingFormBtn.Size = new System.Drawing.Size(230, 59);
+            this.RaytingFormBtn.TabIndex = 2;
+            this.RaytingFormBtn.Text = "Reytingni ko‘rish";
+            this.RaytingFormBtn.UseVisualStyleBackColor = false;
+            this.RaytingFormBtn.Click += new System.EventHandler(this.RaytingFormBtn_Click);
             // 
-            // button3
+            // LogoutBtn
             // 
-            this.button3.BackColor = System.Drawing.Color.Red;
-            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.ForeColor = System.Drawing.Color.White;
-            this.button3.Location = new System.Drawing.Point(687, 623);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(230, 59);
-            this.button3.TabIndex = 3;
-            this.button3.Text = "Chiqish";
-            this.button3.UseVisualStyleBackColor = false;
+            this.LogoutBtn.BackColor = System.Drawing.Color.Red;
+            this.LogoutBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.LogoutBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LogoutBtn.ForeColor = System.Drawing.Color.White;
+            this.LogoutBtn.Location = new System.Drawing.Point(687, 623);
+            this.LogoutBtn.Name = "LogoutBtn";
+            this.LogoutBtn.Size = new System.Drawing.Size(230, 59);
+            this.LogoutBtn.TabIndex = 3;
+            this.LogoutBtn.Text = "Chiqish";
+            this.LogoutBtn.UseVisualStyleBackColor = false;
             // 
             // MainMenuForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1154, 725);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button2);
+            this.Controls.Add(this.LogoutBtn);
+            this.Controls.Add(this.RaytingFormBtn);
             this.Controls.Add(this.StartGame);
             this.Controls.Add(this.label1);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -107,7 +107,7 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button StartGame;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button RaytingFormBtn;
+        private System.Windows.Forms.Button LogoutBtn;
     }
 }

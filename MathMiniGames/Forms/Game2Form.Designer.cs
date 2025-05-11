@@ -17,6 +17,14 @@
             {
                 components.Dispose();
             }
+
+            // Stop the timer when form is disposed
+            if (gameTimer != null)
+            {
+                gameTimer.Stop();
+                gameTimer.Dispose();
+            }
+
             base.Dispose(disposing);
         }
 
@@ -29,11 +37,42 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            this.gameTimer = new System.Windows.Forms.Timer(this.components);
+            this.SuspendLayout();
+            // 
+            // gameTimer
+            // 
+            this.gameTimer.Interval = 1000;
+            this.gameTimer.Tick += new System.EventHandler(this.GameTimer_Tick);
+            // 
+            // Game2Form
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Text = "Game2Form";
+            this.ClientSize = new System.Drawing.Size(520, 550);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.Name = "Game2Form";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Raqamli Sudoku";
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        /// <summary>
+        /// Override the form Text property to store the difficulty level
+        /// </summary>
+        private string _difficulty;
+        public override string Text
+        {
+            get { return _difficulty; }
+            set
+            {
+                _difficulty = value;
+                base.Text = "Raqamli Sudoku - " + value;
+            }
+        }
     }
 }

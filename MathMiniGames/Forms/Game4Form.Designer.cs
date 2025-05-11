@@ -1,6 +1,6 @@
 ﻿namespace MathMiniGames.Forms
 {
-    partial class RatingForm
+    partial class Game4Form
     {
         /// <summary>
         /// Required designer variable.
@@ -30,15 +30,16 @@
         {
             this.SuspendLayout();
             // 
-            // RatingForm
+            // Game4Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(844, 569);
+            this.ClientSize = new System.Drawing.Size(500, 400);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.Name = "RatingForm";
-            this.Text = "RatingForm";
+            this.Name = "Game4Form";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Matematik mashq";
             this.ResumeLayout(false);
 
         }
