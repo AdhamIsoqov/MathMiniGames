@@ -12,9 +12,11 @@ namespace MathMiniGames.Forms
 {
     public partial class GameListForm : Form
     {
-        public GameListForm()
+        private int UserID;
+        public GameListForm(int userID)
         {
             InitializeComponent();
+            UserID = userID;
         }
 
         private void Game1StartBtn_Click(object sender, EventArgs e)
@@ -22,7 +24,7 @@ namespace MathMiniGames.Forms
             if (DifficultLevelComboBox.SelectedItem != null)
             {
                 string difficulty = DifficultLevelComboBox.SelectedItem.ToString(); 
-                Game1Form game1Form = new Game1Form(difficulty);
+                Game1Form game1Form = new Game1Form(difficulty, UserID);
                 game1Form.Show();
                 this.Hide();
             }
@@ -37,7 +39,7 @@ namespace MathMiniGames.Forms
             if (DifficultLevelComboBox.SelectedItem != null) 
             {
                 string difficulty = DifficultLevelComboBox.SelectedItem.ToString(); 
-                Game2Form game2Form = new Game2Form(difficulty);
+                Game2Form game2Form = new Game2Form(difficulty, UserID);
                 game2Form.Show();
                 this.Hide();
             }
@@ -52,7 +54,7 @@ namespace MathMiniGames.Forms
             if (DifficultLevelComboBox.SelectedItem != null) 
             {
                 string difficulty = DifficultLevelComboBox.SelectedItem.ToString();
-                Game3Form game3Form = new Game3Form( difficulty);
+                Game3Form game3Form = new Game3Form( difficulty, UserID);
                 game3Form.Show();
                 this.Hide();
             }
@@ -67,7 +69,7 @@ namespace MathMiniGames.Forms
             if (DifficultLevelComboBox.SelectedItem != null) 
             {
                 string difficulty = DifficultLevelComboBox.SelectedItem.ToString();
-                Game4Form game4Form = new Game4Form(difficulty);
+                Game4Form game4Form = new Game4Form(difficulty, UserID);
                 game4Form.Show();
                 this.Hide();
             }

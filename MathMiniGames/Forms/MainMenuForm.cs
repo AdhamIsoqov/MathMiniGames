@@ -44,13 +44,13 @@ namespace MathMiniGames.Forms
 
         private void StartGame_Click(object sender, EventArgs e)
         {
-            GameListForm gameListForm = new GameListForm();
+            GameListForm gameListForm = new GameListForm(UserID);
             gameListForm.Show();
         }
 
         private void RaytingFormBtn_Click(object sender, EventArgs e)
         {
-            RatingForm ratingForm = new RatingForm();
+            RatingForm ratingForm = new RatingForm(UserID);
             ratingForm.Show();
         }
 

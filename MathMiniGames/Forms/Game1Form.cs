@@ -25,13 +25,14 @@ namespace MathMiniGames.Forms
         private int score = 0;
         private bool gameActive = false;
         private string[] operations = { "+", "-", "×", "÷", "(", ")" };
-        private int currentUserId = 1;
+        private int currentUserId;
         private string connectionString = ConfigurationManager.ConnectionStrings["connectDB"].ToString();
 
-        public Game1Form(string difficulty)
+        public Game1Form(string difficulty, int userID)
         {
             InitializeComponent();
             this.difficulty = difficulty;
+            this.currentUserId = userID;
             SetupGame();
             CreateOperationButtons();
             btnNewGame.Click += BtnNewGame_Click;
@@ -55,20 +56,19 @@ namespace MathMiniGames.Forms
 
         private void SetupGame()
         {
-            // O'yin sozlamalari
             switch (difficulty.ToLower())
             {
                 case "easy":
-                    timeLeft = 180; // 90 sekund
+                    timeLeft = 180;
                     break;
                 case "medium":
-                    timeLeft = 120; // 60 sekund
+                    timeLeft = 120;
                     break;
                 case "hard":
-                    timeLeft = 90; // 45 sekund
+                    timeLeft = 90;
                     break;
                 default:
-                    timeLeft = 110; // Standart
+                    timeLeft = 110;
                     break;
             }
 
@@ -133,7 +133,7 @@ namespace MathMiniGames.Forms
                     Width = 70,
                     Height = 60,
                     Font = new Font("Microsoft Sans Serif", 16, FontStyle.Bold),
-                    Tag = i, // Button indeksi
+                    Tag = i, 
                     Margin = new Padding(15, 10, 15, 10)
                 };
 
@@ -141,14 +141,11 @@ namespace MathMiniGames.Forms
                 numberButtons.Add(btn);
                 pnlNumbers.Controls.Add(btn);
             }
-
-            // Maqsad sonni generatsiya qilish
             GenerateTargetNumber();
         }
 
         private void GenerateTargetNumber()
         {
-            // Darajaga ko'ra maqsad sonni belgilash
             int minTarget, maxTarget;
 
             switch (difficulty.ToLower())
@@ -198,7 +195,7 @@ namespace MathMiniGames.Forms
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@UserID", currentUserId);
-                        command.Parameters.AddWithValue("@GameName", "Game1");
+                        command.Parameters.AddWithValue("@GameName", "To'gri bajar!");
                         command.Parameters.AddWithValue("@Score", score);
                         command.Parameters.AddWithValue("@Difficulty", difficulty);
                         command.Parameters.AddWithValue("@TimeTaken", timeLeft);
@@ -410,6 +407,7 @@ namespace MathMiniGames.Forms
                     lblScore.Text = $"Ball: {score}";
                     lblGameStatus.Text = $"Tabriklaymiz! +{pointsEarned} ball qo'shildi";
                     lblGameStatus.ForeColor = Color.Green;
+                    SaveGameStats();
                 }
                 else
                 {

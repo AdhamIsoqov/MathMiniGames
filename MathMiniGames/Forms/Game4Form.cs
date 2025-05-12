@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -18,11 +20,16 @@ namespace MathMiniGames.Forms
         private Label lblScore;
         private Label lblTime;
         private Label lblResult;
-
-        public Game4Form(string difficulty)
+        private int currentUserID;
+        private string difficulty;
+        private string conn;
+        public Game4Form(string difficulty, int userID)
         {
             InitializeComponent();
+            conn = ConfigurationManager.ConnectionStrings["connectDB"].ToString();
             this.Text = "Matematik mashq";
+            this.difficulty = difficulty;
+            this.currentUserID = userID;
             SetupUI();
             StartGame();
         }
@@ -85,8 +92,6 @@ namespace MathMiniGames.Forms
                 TextAlign = ContentAlignment.MiddleCenter
             };
             this.Controls.Add(lblResult);
-
-            // Taymerni sozlash
             timer.Interval = 1000;
             timer.Tick += Timer_Tick;
         }
@@ -99,10 +104,9 @@ namespace MathMiniGames.Forms
             if (timeLeft <= 0)
             {
                 timer.Stop();
+                SaveGameStats();
                 MessageBox.Show($"O'yin tugadi!\nSizning ballingiz: {score}", "O'yin tugadi",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                // Yangi o'yin boshlash
                 if (MessageBox.Show("Yangi o'yin boshlashni xohlaysizmi?", "Yangi o'yin",
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
@@ -110,6 +114,7 @@ namespace MathMiniGames.Forms
                     timeLeft = 30;
                     lblScore.Text = "Ball: 0";
                     lblTime.Text = "Vaqt: 30";
+
                     GenerateQuestion();
                     timer.Start();
                 }
@@ -137,15 +142,12 @@ namespace MathMiniGames.Forms
             int num2 = random.Next(1, 10);
             string[] operations = { "+", "-", "×" };
             string operation = operations[random.Next(operations.Length)];
-
-            // To'g'ri javobni hisoblash
             switch (operation)
             {
                 case "+":
                     correctAnswer = num1 + num2;
                     break;
                 case "-":
-                    // Manfiy bo'lmasligi uchun
                     if (num1 < num2)
                     {
                         int temp = num1;
@@ -161,40 +163,27 @@ namespace MathMiniGames.Forms
                     correctAnswer = 0;
                     break;
             }
-
-            // Ifodani labelga yozish
             lblExpression.Text = $"{num1} {operation} {num2} = ?";
-
-            // Javob variantlarini yaratish
             GenerateAnswerOptions();
-
-            // Natija labelini tozalash
             lblResult.Text = "";
         }
 
         private void GenerateAnswerOptions()
         {
-            // To'g'ri javobni qaysi tugmaga qo'yishni aniqlash
             int correctButtonIndex = random.Next(4);
-
-            // Har bir tugma uchun
             for (int i = 0; i < 4; i++)
             {
                 if (i == correctButtonIndex)
                 {
-                    // To'g'ri javobli tugma
                     answerButtons[i].Text = correctAnswer.ToString();
                     answerButtons[i].Tag = true;
                 }
                 else
                 {
-                    // Noto'g'ri javoblar
                     int wrongAnswer;
                     do
                     {
-                        // 5 gacha farq qiluvchi noto'g'ri javob yaratish
                         wrongAnswer = correctAnswer + random.Next(-5, 6);
-                        // 0 dan kichik bo'lmasligi va takrorlanmasligi kerak
                     } while (wrongAnswer < 0 || wrongAnswer == correctAnswer ||
                              Array.Exists(answerButtons, b => b != null && b.Text == wrongAnswer.ToString()));
 
@@ -211,26 +200,52 @@ namespace MathMiniGames.Forms
 
             if (isCorrect)
             {
-                // To'g'ri javob uchun
                 score += 10;
                 lblScore.Text = $"Ball: {score}";
-                timeLeft += 3; // Vaqt qo'shiladi
+                timeLeft += 3; 
                 lblTime.Text = $"Vaqt: {timeLeft}";
                 lblResult.Text = "To'g'ri!";
                 lblResult.ForeColor = Color.Green;
             }
             else
             {
-                // Xato javob uchun
                 lblResult.Text = $"Xato! To'g'ri javob: {correctAnswer}";
                 lblResult.ForeColor = Color.Red;
-                timeLeft -= 2; // Vaqt kamayadi
+                timeLeft -= 2; 
                 if (timeLeft < 0) timeLeft = 0;
                 lblTime.Text = $"Vaqt: {timeLeft}";
             }
-
-            // Yangi savol generatsiya qilish
             GenerateQuestion();
         }
+        private void SaveGameStats()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(conn))
+                {
+                    connection.Open();
+                    string query = "INSERT INTO GameStats (UserID, GameName, Score, Difficulty, TimeTaken, DatePlayed) " +
+                                   "VALUES (@UserID, @GameName, @Score, @Difficulty, @TimeTaken, @DatePlayed)";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@UserID", currentUserID); 
+                        command.Parameters.AddWithValue("@GameName", "Sonni top"); 
+                        command.Parameters.AddWithValue("@Score", score); 
+                        command.Parameters.AddWithValue("@Difficulty", difficulty);
+                        command.Parameters.AddWithValue("@TimeTaken", 30 - timeLeft); 
+                        command.Parameters.AddWithValue("@DatePlayed", DateTime.Now); 
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+                MessageBox.Show("O'yin natijalari saqlandi!", "Ma'lumot", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Xatolik yuz berdi: " + ex.Message, "Xato", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
     }
 }

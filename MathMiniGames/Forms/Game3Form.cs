@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -26,10 +28,14 @@ namespace MathMiniGames.Forms
         private int correctAnswers = 0;
         private int totalQuestions = 0;
         private Label scoreLabel;
-        public Game3Form(string difficulty)
+        private int currentUserID;
+        private string connectionString;
+        public Game3Form(string difficulty, int userID)
         {
             InitializeComponent();
             this.difficulty = difficulty;
+            this.currentUserID = userID;
+            connectionString = ConfigurationManager.ConnectionStrings["connectDB"].ToString();
             SetupGame();
         }
         private void SetupGame()
@@ -276,6 +282,7 @@ namespace MathMiniGames.Forms
             }
             if (row == labyrintSize - 1 && col == labyrintSize - 1)
             {
+                SaveGameStats();
                 MessageBox.Show($"Tabriklayman! Siz labirintni tugatdingiz!\nTo'gri javoblar: {correctAnswers}/{totalQuestions}",
                                "O'yin tugadi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
@@ -347,5 +354,37 @@ namespace MathMiniGames.Forms
                 answerTextBoxes[row, col].Focus();
             }
         }
+        private void SaveGameStats()
+        {
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    int currentUserId = this.currentUserID;
+                    connection.Open();
+                    string query = "INSERT INTO GameStats (UserID, GameName, Score, Difficulty, TimeTaken, DatePlayed) " +
+                                   "VALUES (@UserID, @GameName, @Score, @Difficulty, @TimeTaken, @DatePlayed)";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@UserID", currentUserId); 
+                        command.Parameters.AddWithValue("@GameName", "Raqamli Labirint");
+                        command.Parameters.AddWithValue("@Score", correctAnswers);
+                        command.Parameters.AddWithValue("@Difficulty", difficulty);
+                        command.Parameters.AddWithValue("@TimeTaken", 0); // o'yin davomiyligini hisoblash kiritilishi kerak
+                        command.Parameters.AddWithValue("@DatePlayed", DateTime.Now);
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+                MessageBox.Show("O'yin natijalari saqlandi!", "Ma'lumot", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Xatolik yuz berdi: " + ex.Message, "Xato", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
     }
 }

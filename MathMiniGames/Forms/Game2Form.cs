@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -23,11 +25,13 @@ namespace MathMiniGames.Forms
         private int elapsedSeconds;
         private Random random = new Random();
         private string currentDifficulty;
+        private int currentUserID;
 
-        public Game2Form(string difficulty)
+        public Game2Form(string difficulty, int userID)
         {
+            this.currentUserID = userID;
             InitializeComponent();
-            currentDifficulty = difficulty;
+            this.currentDifficulty = difficulty;
             InitializeSudokuBoard();
             InitializeGameControls();
             GenerateNewPuzzle(currentDifficulty);
@@ -166,7 +170,64 @@ namespace MathMiniGames.Forms
             this.MaximizeBox = false;
             this.StartPosition = FormStartPosition.CenterScreen;
         }
+        private void SaveGameStats()
+        {
+            int currentUserId = this.currentUserID;
+            string gameName = "Raqamli Sudoku";
+            int score = 0;
 
+            // Qiyinlik darajasiga qarab ball berish
+            switch (currentDifficulty.ToLower())
+            {
+                case "oson":
+                    score = 100;
+                    break;
+                case "o'rta":
+                    score = 200;
+                    break;
+                case "qiyin":
+                    score = 300;
+                    break;
+                default:
+                    score = 100;
+                    break;
+            }
+
+            string connectionString = ConfigurationManager.ConnectionStrings["connectDB"].ToString();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    string query = @"INSERT INTO GameStats (UserID, GameName, Score, Difficulty, TimeTaken) 
+                             VALUES (@UserID, @GameName, @Score, @Difficulty, @TimeTaken)";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@UserID", currentUserId);
+                        command.Parameters.AddWithValue("@GameName", gameName);
+                        command.Parameters.AddWithValue("@Score", score);
+                        command.Parameters.AddWithValue("@Difficulty", currentDifficulty);
+                        command.Parameters.AddWithValue("@TimeTaken", elapsedSeconds);
+
+                        int rowsAffected = command.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            MessageBox.Show("Statistika saqlandi!", "Ma'lumot", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Statistika saqlanmadi!", "Xatolik", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Xatolik yuz berdi: {ex.Message}", "Xatolik", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
         private void GenerateNewPuzzle(string difficulty)
         {
             elapsedSeconds = 0;
@@ -440,6 +501,7 @@ namespace MathMiniGames.Forms
             {
                 MessageBox.Show("O'yin tugallanmagan! Barcha kataklar to'ldirilishi kerak.",
                     "Sudoku", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
             }
             else if (!isCorrect)
             {
@@ -448,6 +510,7 @@ namespace MathMiniGames.Forms
             }
             else
             {
+                SaveGameStats(); 
                 gameTimer.Stop();
                 MessageBox.Show($"Tabriklaymiz! Sudoku to'g'ri yechildi!\nYakunlangan vaqt: {FormatTime(elapsedSeconds)}",
                     "Sudoku", MessageBoxButtons.OK, MessageBoxIcon.Information);
