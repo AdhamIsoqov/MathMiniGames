@@ -182,18 +182,50 @@ namespace MathMiniGames.Forms
             lblGameStatus.Text = "";
             GenerateNumbers();
             SetupGame();
-
-            // Timer ishga tushirish
             gameActive = true;
             timer.Start();
-            SaveGameStats();
         }
         private void SaveGameStats()
         {
-            
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    string query = "INSERT INTO GameStats (UserID, GameName, Score, Difficulty, TimeTaken) " +
+                                   "VALUES (@UserID, @GameName, @Score, @Difficulty, @TimeTaken)";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@UserID", currentUserId);
+                        command.Parameters.AddWithValue("@GameName", "Game1");
+                        command.Parameters.AddWithValue("@Score", score);
+                        command.Parameters.AddWithValue("@Difficulty", difficulty);
+                        command.Parameters.AddWithValue("@TimeTaken", timeLeft);
+
+                        int rowsAffected = command.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            MessageBox.Show("Statistika saqlandi!", "Ma'lumot", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Statistika saqlanmadi!", "Xatolik", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Xatolik yuz berdi: {ex.Message}", "Xatolik", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
         private void BtnNewGame_Click(object sender, EventArgs e)
         {
+            if (gameActive)
+            {
+                SaveGameStats();
+            }
             StartNewGame();
         }
 
@@ -310,6 +342,7 @@ namespace MathMiniGames.Forms
                     lblScore.Text = $"Ball: {score}";
                     lblGameStatus.Text = $"Tabriklaymiz! +{pointsEarned} ball qo'shildi";
                     lblGameStatus.ForeColor = Color.Green;
+                    SaveGameStats();
                 }
             }
             catch (Exception)
@@ -348,6 +381,7 @@ namespace MathMiniGames.Forms
                 gameActive = false;
                 lblGameStatus.Text = "Vaqt tugadi!";
                 lblGameStatus.ForeColor = Color.Red;
+                SaveGameStats();
             }
         }
         private void btnCheck_Click(object sender, EventArgs e)

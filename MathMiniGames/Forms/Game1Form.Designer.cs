@@ -164,12 +164,14 @@
             this.btnCheck.TabIndex = 11;
             this.btnCheck.Text = "Tekshrish";
             this.btnCheck.UseVisualStyleBackColor = true;
+            this.btnCheck.Click += new System.EventHandler(this.btnCheck_Click);
             // 
             // Game1Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(669, 534);
+            this.Controls.Add(this.pnlNumbers);
             this.Controls.Add(this.btnCheck);
             this.Controls.Add(this.lblGameStatus);
             this.Controls.Add(this.lblDifficulty);
@@ -178,7 +180,6 @@
             this.Controls.Add(this.btnClear);
             this.Controls.Add(this.lblExpression);
             this.Controls.Add(this.pnlOperations);
-            this.Controls.Add(this.pnlNumbers);
             this.Controls.Add(this.lblScore);
             this.Controls.Add(this.lblTime);
             this.Controls.Add(this.lblTarget);
