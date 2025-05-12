@@ -164,7 +164,6 @@
             this.btnCheck.TabIndex = 11;
             this.btnCheck.Text = "Tekshrish";
             this.btnCheck.UseVisualStyleBackColor = true;
-            this.btnCheck.Click += new System.EventHandler(this.btnCheck_Click);
             // 
             // Game1Form
             // 

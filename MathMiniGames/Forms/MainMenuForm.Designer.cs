@@ -32,13 +32,14 @@
             this.StartGame = new System.Windows.Forms.Button();
             this.RaytingFormBtn = new System.Windows.Forms.Button();
             this.LogoutBtn = new System.Windows.Forms.Button();
+            this.UserName = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 22.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(351, 286);
+            this.label1.Location = new System.Drawing.Point(343, 300);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(460, 42);
             this.label1.TabIndex = 0;
@@ -84,12 +85,22 @@
             this.LogoutBtn.TabIndex = 3;
             this.LogoutBtn.Text = "Chiqish";
             this.LogoutBtn.UseVisualStyleBackColor = false;
+            this.LogoutBtn.Click += new System.EventHandler(this.LogoutBtn_Click);
+            // 
+            // UserName
+            // 
+            this.UserName.AutoSize = true;
+            this.UserName.Location = new System.Drawing.Point(34, 29);
+            this.UserName.Name = "UserName";
+            this.UserName.Size = new System.Drawing.Size(0, 25);
+            this.UserName.TabIndex = 4;
             // 
             // MainMenuForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1154, 725);
+            this.Controls.Add(this.UserName);
             this.Controls.Add(this.LogoutBtn);
             this.Controls.Add(this.RaytingFormBtn);
             this.Controls.Add(this.StartGame);
@@ -109,5 +120,6 @@
         private System.Windows.Forms.Button StartGame;
         private System.Windows.Forms.Button RaytingFormBtn;
         private System.Windows.Forms.Button LogoutBtn;
+        private System.Windows.Forms.Label UserName;
     }
 }

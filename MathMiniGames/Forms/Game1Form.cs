@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -22,29 +24,21 @@ namespace MathMiniGames.Forms
         private int timeLeft;
         private int score = 0;
         private bool gameActive = false;
-
-        // Amallar tugmalari
         private string[] operations = { "+", "-", "×", "÷", "(", ")" };
+        private int currentUserId = 1;
+        private string connectionString = ConfigurationManager.ConnectionStrings["connectDB"].ToString();
 
         public Game1Form(string difficulty)
         {
             InitializeComponent();
             this.difficulty = difficulty;
-
-            // Formani ishga tushirish
             SetupGame();
             CreateOperationButtons();
-
-            // Event handlerlarni qo'shish
             btnNewGame.Click += BtnNewGame_Click;
             btnClear.Click += BtnClear_Click;
             btnUndo.Click += BtnUndo_Click;
             timer.Tick += Timer_Tick;
-
-            // Darajani ko'rsatish
             lblDifficulty.Text = $"Daraja: {GetDifficultyName()}";
-
-            // Yangi o'yinni boshlash
             StartNewGame();
         }
 
@@ -106,8 +100,6 @@ namespace MathMiniGames.Forms
             pnlNumbers.Controls.Clear();
             numberButtons.Clear();
             availableNumbers.Clear();
-
-            // O'yin darajasiga ko'ra sonlar sonini aniqlash
             int count;
             int maxValue;
 
@@ -130,8 +122,6 @@ namespace MathMiniGames.Forms
                     maxValue = 12;
                     break;
             }
-
-            // Tasodifiy sonlarni generatsiya qilish
             for (int i = 0; i < count; i++)
             {
                 int number = random.Next(1, maxValue + 1);
@@ -180,31 +170,28 @@ namespace MathMiniGames.Forms
                     maxTarget = 50;
                     break;
             }
-
-            // Tasodifiy maqsad sonni generatsiya qilish
             targetNumber = random.Next(minTarget, maxTarget + 1);
             lblTarget.Text = $"Maqsad: {targetNumber}";
         }
 
         private void StartNewGame()
         {
-            // O'yin holatini qayta o'rnatish
             expressionParts.Clear();
             usedNumberIndices.Clear();
             lblExpression.Text = "";
             lblGameStatus.Text = "";
-
-            // Sonlarni generatsiya qilish
             GenerateNumbers();
-
-            // Vaqtni qayta o'rnatish
             SetupGame();
 
             // Timer ishga tushirish
             gameActive = true;
             timer.Start();
+            SaveGameStats();
         }
-
+        private void SaveGameStats()
+        {
+            
+        }
         private void BtnNewGame_Click(object sender, EventArgs e)
         {
             StartNewGame();
@@ -344,14 +331,12 @@ namespace MathMiniGames.Forms
 
         private double EvaluateExpression(string expression)
         {
-            // Ifodani baholash uchun DataTable.Compute metodidan foydalanish
             DataTable table = new DataTable();
             table.Columns.Add("expression", typeof(string), expression);
             DataRow row = table.NewRow();
             table.Rows.Add(row);
             return double.Parse((string)row["expression"]);
         }
-
         private void Timer_Tick(object sender, EventArgs e)
         {
             timeLeft--;
@@ -359,14 +344,12 @@ namespace MathMiniGames.Forms
 
             if (timeLeft <= 0)
             {
-                // Vaqt tugadi
                 timer.Stop();
                 gameActive = false;
                 lblGameStatus.Text = "Vaqt tugadi!";
                 lblGameStatus.ForeColor = Color.Red;
             }
         }
-
         private void btnCheck_Click(object sender, EventArgs e)
         {
             if (!gameActive || expressionParts.Count == 0)
@@ -375,25 +358,16 @@ namespace MathMiniGames.Forms
                 lblGameStatus.ForeColor = Color.Red;
                 return;
             }
-
             try
             {
-                // Ifodani hisoblash
                 string expression = string.Join("", expressionParts)
                     .Replace("×", "*")
                     .Replace("÷", "/");
-
-                // Natijani hisoblash
                 var result = EvaluateExpression(expression);
-
-                // Natijani tekshirish
                 if (result == targetNumber)
                 {
-                    // O'yinni to'xtatish
                     timer.Stop();
                     gameActive = false;
-
-                    // Ballni oshirish
                     int timeBonus = timeLeft;
                     int difficultyMultiplier = GetDifficultyMultiplier();
                     int pointsEarned = 100 + timeBonus * difficultyMultiplier;
@@ -405,14 +379,12 @@ namespace MathMiniGames.Forms
                 }
                 else
                 {
-                    // Natija maqsadga mos kelmasa
                     lblGameStatus.Text = $"Natija: {result} ≠ {targetNumber}. Qayta urinib ko'ring!";
                     lblGameStatus.ForeColor = Color.Red;
                 }
             }
             catch (Exception ex)
             {
-                // Xatolik yuz bersa
                 lblGameStatus.Text = "Noto'g'ri ifoda. Tekshirib qayta kiriting!";
                 lblGameStatus.ForeColor = Color.Red;
             }
