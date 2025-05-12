@@ -12,9 +12,11 @@ namespace MathMiniGames.Forms
 {
     public partial class MainMenuForm : Form
     {
-        public MainMenuForm()
+        private int  UserID;
+        public MainMenuForm(int userId)
         {
             InitializeComponent();
+            UserID = userId;
         }
 
         private void StartGame_Click(object sender, EventArgs e)
