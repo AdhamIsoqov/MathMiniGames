@@ -34,40 +34,41 @@ namespace MathMiniGames.Forms
             this.lblPassword = new System.Windows.Forms.Label();
             this.lblEmail = new System.Windows.Forms.Label();
             this.lblFullName = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // txtUsername
             // 
-            this.txtUsername.Location = new System.Drawing.Point(226, 53);
+            this.txtUsername.Location = new System.Drawing.Point(172, 44);
             this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Size = new System.Drawing.Size(200, 30);
+            this.txtUsername.Size = new System.Drawing.Size(321, 30);
             this.txtUsername.TabIndex = 0;
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(226, 103);
+            this.txtPassword.Location = new System.Drawing.Point(172, 94);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(200, 30);
+            this.txtPassword.Size = new System.Drawing.Size(321, 30);
             this.txtPassword.TabIndex = 1;
             this.txtPassword.UseSystemPasswordChar = true;
             // 
             // txtEmail
             // 
-            this.txtEmail.Location = new System.Drawing.Point(226, 153);
+            this.txtEmail.Location = new System.Drawing.Point(172, 144);
             this.txtEmail.Name = "txtEmail";
-            this.txtEmail.Size = new System.Drawing.Size(200, 30);
+            this.txtEmail.Size = new System.Drawing.Size(321, 30);
             this.txtEmail.TabIndex = 2;
             // 
             // txtFullName
             // 
-            this.txtFullName.Location = new System.Drawing.Point(226, 203);
+            this.txtFullName.Location = new System.Drawing.Point(172, 194);
             this.txtFullName.Name = "txtFullName";
-            this.txtFullName.Size = new System.Drawing.Size(200, 30);
+            this.txtFullName.Size = new System.Drawing.Size(321, 30);
             this.txtFullName.TabIndex = 3;
             // 
             // btnRegister
             // 
-            this.btnRegister.Location = new System.Drawing.Point(226, 253);
+            this.btnRegister.Location = new System.Drawing.Point(172, 244);
             this.btnRegister.Name = "btnRegister";
             this.btnRegister.Size = new System.Drawing.Size(200, 40);
             this.btnRegister.TabIndex = 4;
@@ -78,7 +79,7 @@ namespace MathMiniGames.Forms
             // lblUsername
             // 
             this.lblUsername.AutoSize = true;
-            this.lblUsername.Location = new System.Drawing.Point(117, 56);
+            this.lblUsername.Location = new System.Drawing.Point(63, 47);
             this.lblUsername.Name = "lblUsername";
             this.lblUsername.Size = new System.Drawing.Size(108, 25);
             this.lblUsername.TabIndex = 5;
@@ -87,7 +88,7 @@ namespace MathMiniGames.Forms
             // lblPassword
             // 
             this.lblPassword.AutoSize = true;
-            this.lblPassword.Location = new System.Drawing.Point(117, 106);
+            this.lblPassword.Location = new System.Drawing.Point(63, 97);
             this.lblPassword.Name = "lblPassword";
             this.lblPassword.Size = new System.Drawing.Size(63, 25);
             this.lblPassword.TabIndex = 6;
@@ -96,7 +97,7 @@ namespace MathMiniGames.Forms
             // lblEmail
             // 
             this.lblEmail.AutoSize = true;
-            this.lblEmail.Location = new System.Drawing.Point(117, 156);
+            this.lblEmail.Location = new System.Drawing.Point(63, 147);
             this.lblEmail.Name = "lblEmail";
             this.lblEmail.Size = new System.Drawing.Size(66, 25);
             this.lblEmail.TabIndex = 7;
@@ -105,15 +106,26 @@ namespace MathMiniGames.Forms
             // lblFullName
             // 
             this.lblFullName.AutoSize = true;
-            this.lblFullName.Location = new System.Drawing.Point(117, 206);
+            this.lblFullName.Location = new System.Drawing.Point(63, 197);
             this.lblFullName.Name = "lblFullName";
             this.lblFullName.Size = new System.Drawing.Size(57, 25);
             this.lblFullName.TabIndex = 8;
             this.lblFullName.Text = "FISH";
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(378, 244);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(115, 40);
+            this.button1.TabIndex = 9;
+            this.button1.Text = "Ortga";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // Register
             // 
             this.ClientSize = new System.Drawing.Size(600, 350);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.lblFullName);
             this.Controls.Add(this.lblEmail);
             this.Controls.Add(this.lblPassword);
@@ -130,5 +142,7 @@ namespace MathMiniGames.Forms
             this.PerformLayout();
 
         }
+
+        private Button button1;
     }
 }
