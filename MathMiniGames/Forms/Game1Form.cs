@@ -39,7 +39,7 @@ namespace MathMiniGames.Forms
             btnClear.Click += BtnClear_Click;
             btnUndo.Click += BtnUndo_Click;
             timer.Tick += Timer_Tick;
-            lblDifficulty.Text = $"Daraja: {GetDifficultyName()}";
+            lblDifficulty.Text = $"Daraja: {difficulty}";
             StartNewGame();
         }
 
@@ -47,16 +47,16 @@ namespace MathMiniGames.Forms
         {
             switch (difficulty.ToLower())
             {
-                case "easy": return "Oson";
-                case "medium": return "O'rta";
-                case "hard": return "Qiyin";
-                default: return "Oson";
+                case "oson": return "easy";
+                case "o'rta": return "medium";
+                case "qiyin": return "hard";
+                default: return "easy";
             }
         }
 
         private void SetupGame()
         {
-            switch (difficulty.ToLower())
+            switch (GetDifficultyName())
             {
                 case "easy":
                     timeLeft = 180;
@@ -95,60 +95,69 @@ namespace MathMiniGames.Forms
             }
         }
 
-        private void GenerateNumbers()
+    private void GenerateNumbers()
+    {
+        pnlNumbers.Controls.Clear();
+        numberButtons.Clear();
+        availableNumbers.Clear();
+
+        int count, minValue, maxValue;
+
+        switch (GetDifficultyName())
         {
-            pnlNumbers.Controls.Clear();
-            numberButtons.Clear();
-            availableNumbers.Clear();
-            int count;
-            int maxValue;
+            case "easy":
+                count = 4;
+                minValue = 1;
+                maxValue = 9;
+                break;
 
-            switch (difficulty.ToLower())
-            {
-                case "easy":
-                    count = 4;
-                    maxValue = 12;
-                    break;
-                case "medium":
-                    count = 5;
-                    maxValue = 20;
-                    break;
-                case "hard":
-                    count = 6;
-                    maxValue = 30;
-                    break;
-                default:
-                    count = 4;
-                    maxValue = 12;
-                    break;
-            }
-            for (int i = 0; i < count; i++)
-            {
-                int number = random.Next(1, maxValue + 1);
-                availableNumbers.Add(number);
+            case "medium":
+                count = 5;
+                minValue = 10;
+                maxValue = 20;
+                break;
 
-                Button btn = new Button
-                {
-                    Text = number.ToString(),
-                    Width = 70,
-                    Height = 60,
-                    Font = new Font("Microsoft Sans Serif", 16, FontStyle.Bold),
-                    Tag = i, 
-                    Margin = new Padding(15, 10, 15, 10)
-                };
+            case "hard":
+                count = 6;
+                minValue = 20;
+                maxValue = 30; 
+                break;
 
-                btn.Click += NumberButton_Click;
-                numberButtons.Add(btn);
-                pnlNumbers.Controls.Add(btn);
-            }
-            GenerateTargetNumber();
+            default:
+                count = 4;
+                minValue = 1;
+                maxValue = 12;
+                break;
         }
 
-        private void GenerateTargetNumber()
+        for (int i = 0; i < count; i++)
+        {
+            int number = random.Next(minValue, maxValue + 1);
+            availableNumbers.Add(number);
+
+            Button btn = new Button
+            {
+                Text = number.ToString(),
+                Width = 70,
+                Height = 60,
+                Font = new Font("Microsoft Sans Serif", 16, FontStyle.Bold),
+                Tag = i,
+                Margin = new Padding(15, 10, 15, 10),
+                BackColor = Color.LightGray
+            };
+
+            btn.Click += NumberButton_Click;
+            numberButtons.Add(btn);
+            pnlNumbers.Controls.Add(btn);
+        }
+
+        GenerateTargetNumber(); 
+    }
+    private void GenerateTargetNumber()
         {
             int minTarget, maxTarget;
 
-            switch (difficulty.ToLower())
+            switch (GetDifficultyName())
             {
                 case "easy":
                     minTarget = 10;
@@ -182,42 +191,43 @@ namespace MathMiniGames.Forms
             gameActive = true;
             timer.Start();
         }
-        private void SaveGameStats()
+
+    private void SaveGameStats()
+    {
+        using (SqlConnection connection = new SqlConnection(connectionString))
         {
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            try
             {
-                try
+                connection.Open();
+                string query = "INSERT INTO GameStats (UserID, GameName, Score, Difficulty, TimeTaken) " +
+                                "VALUES (@UserID, @GameName, @Score, @Difficulty, @TimeTaken)";
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    connection.Open();
-                    string query = "INSERT INTO GameStats (UserID, GameName, Score, Difficulty, TimeTaken) " +
-                                   "VALUES (@UserID, @GameName, @Score, @Difficulty, @TimeTaken)";
+                    command.Parameters.AddWithValue("@UserID", currentUserId);
+                    command.Parameters.AddWithValue("@GameName", "To'gri bajar!");
+                    command.Parameters.AddWithValue("@Score", score);
+                    command.Parameters.AddWithValue("@Difficulty", difficulty);
+                    command.Parameters.AddWithValue("@TimeTaken", timeLeft);
 
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    int rowsAffected = command.ExecuteNonQuery();
+                    if (rowsAffected > 0)
                     {
-                        command.Parameters.AddWithValue("@UserID", currentUserId);
-                        command.Parameters.AddWithValue("@GameName", "To'gri bajar!");
-                        command.Parameters.AddWithValue("@Score", score);
-                        command.Parameters.AddWithValue("@Difficulty", difficulty);
-                        command.Parameters.AddWithValue("@TimeTaken", timeLeft);
-
-                        int rowsAffected = command.ExecuteNonQuery();
-                        if (rowsAffected > 0)
-                        {
-                            MessageBox.Show("Statistika saqlandi!", "Ma'lumot", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
-                        else
-                        {
-                            MessageBox.Show("Statistika saqlanmadi!", "Xatolik", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
+                        MessageBox.Show("Statistika saqlandi!", "Ma'lumot", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Statistika saqlanmadi!", "Xatolik", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Xatolik yuz berdi: {ex.Message}", "Xatolik", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Xatolik yuz berdi: {ex.Message}", "Xatolik", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        private void BtnNewGame_Click(object sender, EventArgs e)
+    }
+
+    private void BtnNewGame_Click(object sender, EventArgs e)
         {
             if (gameActive)
             {
@@ -421,5 +431,5 @@ namespace MathMiniGames.Forms
                 lblGameStatus.ForeColor = Color.Red;
             }
         }
-    }
+}
 }

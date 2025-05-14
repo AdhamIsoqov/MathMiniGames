@@ -45,8 +45,6 @@ namespace MathMiniGames.Forms
 
             int cellSize = 40;
             int margin = 2;
-
-            // Create the main 9x9 grid panel
             Panel sudokuPanel = new Panel
             {
                 Location = new Point(20, 60),
@@ -54,8 +52,6 @@ namespace MathMiniGames.Forms
                 BorderStyle = BorderStyle.FixedSingle
             };
             this.Controls.Add(sudokuPanel);
-
-            // Create 9 sub-panels (3x3 blocks)
             for (int blockRow = 0; blockRow < 3; blockRow++)
             {
                 for (int blockCol = 0; blockCol < 3; blockCol++)
@@ -175,8 +171,6 @@ namespace MathMiniGames.Forms
             int currentUserId = this.currentUserID;
             string gameName = "Raqamli Sudoku";
             int score = 0;
-
-            // Qiyinlik darajasiga qarab ball berish
             switch (currentDifficulty.ToLower())
             {
                 case "oson":
@@ -192,7 +186,6 @@ namespace MathMiniGames.Forms
                     score = 100;
                     break;
             }
-
             string connectionString = ConfigurationManager.ConnectionStrings["connectDB"].ToString();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -467,6 +460,7 @@ namespace MathMiniGames.Forms
 
         private void NewGameButton_Click(object sender, EventArgs e)
         {
+            SaveGameStats();
             GenerateNewPuzzle(currentDifficulty);
         }
 

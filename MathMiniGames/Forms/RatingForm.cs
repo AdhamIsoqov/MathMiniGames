@@ -33,14 +33,21 @@ namespace MathMiniGames.Forms
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
-                    string query = @"SELECT GameName, Score, Difficulty, TimeTaken, DatePlayed 
-                                     FROM GameStats 
-                                     WHERE UserID = @UserID AND GameName = @GameName 
-                                     ORDER BY Score DESC";
+                    string query = @"
+                SELECT 
+                    u.Username AS 'Foydalanuvchi',
+                    gs.GameName AS 'O‘yin nomi',
+                    gs.Score AS 'Ball',
+                    gs.Difficulty AS 'Qiyinlik',
+                    gs.TimeTaken AS 'Sarflangan vaqt (soniya)',
+                    gs.DatePlayed AS 'O‘ynagan sana'
+                FROM GameStats gs
+                INNER JOIN Users u ON gs.UserID = u.UserID
+                WHERE gs.GameName = @GameName
+                ORDER BY gs.Score DESC, gs.TimeTaken ASC";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@UserID", currentUserID);
                         command.Parameters.AddWithValue("@GameName", gameName);
 
                         SqlDataAdapter adapter = new SqlDataAdapter(command);
@@ -51,12 +58,13 @@ namespace MathMiniGames.Forms
 
                         if (dataTable.Rows.Count > 0)
                         {
-                            int bestScore = Convert.ToInt32(dataTable.Rows[0]["Score"]);
-                            recordLabel.Text = $"{gameName} oyinidagi eng yaxshi natija: {bestScore}";
+                            int bestScore = Convert.ToInt32(dataTable.Rows[0]["Ball"]);
+                            string bestUser = dataTable.Rows[0]["Foydalanuvchi"].ToString();
+                            recordLabel.Text = $"Eng yaxshi natija: {bestScore} (Foydalanuvchi: {bestUser})";
                         }
                         else
                         {
-                            recordLabel.Text = $"{gameName} uchun rekord topilmadi.";
+                            recordLabel.Text = $"{gameName} uchun hech qanday natija topilmadi.";
                         }
                     }
                 }
