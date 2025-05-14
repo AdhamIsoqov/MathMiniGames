@@ -38,8 +38,34 @@ namespace MathMiniGames.Forms
             connectionString = ConfigurationManager.ConnectionStrings["connectDB"].ToString();
             SetupGame();
         }
+        private string GetDifficultyName()
+        {
+            switch (difficulty.ToLower())
+            {
+                case "oson": return "easy";
+                case "o'rta": return "medium";
+                case "qiyin": return "hard";
+                default: return "easy";
+            }
+        }
         private void SetupGame()
         {
+            switch (GetDifficultyName())
+            {
+                case "easy":
+                    labyrintSize = 5;
+                    break;
+                case "medium":
+                    labyrintSize = 7;
+                    break;
+                case "hard":
+                    labyrintSize = 9;
+                    break;
+                default:
+                    labyrintSize = 16; 
+                    break;
+            }
+
             labyrinth = new int[labyrintSize, labyrintSize];
             GenerateLabyrinth();
             SetupUI();

@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace MathMiniGames.Forms
@@ -14,7 +15,6 @@ namespace MathMiniGames.Forms
         private int timeLeft = 30;
         private Timer timer = new Timer();
 
-        // UI elementlari
         private Label lblExpression;
         private Button[] answerButtons = new Button[4];
         private Label lblScore;
@@ -23,6 +23,7 @@ namespace MathMiniGames.Forms
         private int currentUserID;
         private string difficulty;
         private string conn;
+
         public Game4Form(string difficulty, int userID)
         {
             InitializeComponent();
@@ -36,11 +37,9 @@ namespace MathMiniGames.Forms
 
         private void SetupUI()
         {
-            // Asosiy formani sozlash
             this.Size = new Size(500, 400);
             this.StartPosition = FormStartPosition.CenterScreen;
 
-            // Ifoda ko'rsatiladigan label
             lblExpression = new Label
             {
                 Size = new Size(460, 60),
@@ -51,7 +50,6 @@ namespace MathMiniGames.Forms
             };
             this.Controls.Add(lblExpression);
 
-            // Javob tugmalari
             for (int i = 0; i < 4; i++)
             {
                 answerButtons[i] = new Button
@@ -64,7 +62,6 @@ namespace MathMiniGames.Forms
                 this.Controls.Add(answerButtons[i]);
             }
 
-            // Ball va vaqt labellar
             lblScore = new Label
             {
                 Size = new Size(220, 30),
@@ -83,7 +80,6 @@ namespace MathMiniGames.Forms
             };
             this.Controls.Add(lblTime);
 
-            // Natija ko'rsatuvchi label
             lblResult = new Label
             {
                 Size = new Size(460, 30),
@@ -92,8 +88,19 @@ namespace MathMiniGames.Forms
                 TextAlign = ContentAlignment.MiddleCenter
             };
             this.Controls.Add(lblResult);
+
             timer.Interval = 1000;
             timer.Tick += Timer_Tick;
+        }
+
+        private void StartGame()
+        {
+            score = 0;
+            timeLeft = 30;
+            lblScore.Text = "Ball: 0";
+            lblTime.Text = "Vaqt: 30";
+            GenerateQuestion();
+            timer.Start();
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -110,13 +117,7 @@ namespace MathMiniGames.Forms
                 if (MessageBox.Show("Yangi o'yin boshlashni xohlaysizmi?", "Yangi o'yin",
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    score = 0;
-                    timeLeft = 30;
-                    lblScore.Text = "Ball: 0";
-                    lblTime.Text = "Vaqt: 30";
-
-                    GenerateQuestion();
-                    timer.Start();
+                    StartGame();
                 }
                 else
                 {
@@ -125,55 +126,45 @@ namespace MathMiniGames.Forms
             }
         }
 
-        private void StartGame()
-        {
-            score = 0;
-            timeLeft = 30;
-            lblScore.Text = "Ball: 0";
-            lblTime.Text = "Vaqt: 30";
-            GenerateQuestion();
-            timer.Start();
-        }
-
         private void GenerateQuestion()
         {
-            // Ifoda yaratish
-            int num1 = random.Next(1, 10);
-            int num2 = random.Next(1, 10);
+            int numCount = difficulty == "medium" ? 3 : (difficulty == "hard" ? 4 : 2);
+            int[] numbers = new int[numCount];
             string[] operations = { "+", "-", "×" };
-            string operation = operations[random.Next(operations.Length)];
-            switch (operation)
+            string[] chosenOps = new string[numCount - 1];
+
+            for (int i = 0; i < numCount; i++)
             {
-                case "+":
-                    correctAnswer = num1 + num2;
-                    break;
-                case "-":
-                    if (num1 < num2)
-                    {
-                        int temp = num1;
-                        num1 = num2;
-                        num2 = temp;
-                    }
-                    correctAnswer = num1 - num2;
-                    break;
-                case "×":
-                    correctAnswer = num1 * num2;
-                    break;
-                default:
-                    correctAnswer = 0;
-                    break;
+                numbers[i] = random.Next(1, 10);
+                if (i < numCount - 1)
+                    chosenOps[i] = operations[random.Next(operations.Length)];
             }
-            lblExpression.Text = $"{num1} {operation} {num2} = ?";
+
+            string expressionText = numbers[0].ToString();
+            correctAnswer = numbers[0];
+
+            for (int i = 1; i < numCount; i++)
+            {
+                expressionText += $" {chosenOps[i - 1]} {numbers[i]}";
+                switch (chosenOps[i - 1])
+                {
+                    case "+": correctAnswer += numbers[i]; break;
+                    case "-": correctAnswer -= numbers[i]; break;
+                    case "×": correctAnswer *= numbers[i]; break;
+                }
+            }
+
+            lblExpression.Text = expressionText + " = ?";
             GenerateAnswerOptions();
             lblResult.Text = "";
         }
 
         private void GenerateAnswerOptions()
         {
-            int correctButtonIndex = random.Next(4);
+            int correctIndex = random.Next(4);
             for (int i = 0; i < 4; i++)
             {
-                if (i == correctButtonIndex)
+                if (i == correctIndex)
                 {
                     answerButtons[i].Text = correctAnswer.ToString();
                     answerButtons[i].Tag = true;
@@ -185,7 +176,7 @@ namespace MathMiniGames.Forms
                     {
                         wrongAnswer = correctAnswer + random.Next(-5, 6);
                     } while (wrongAnswer < 0 || wrongAnswer == correctAnswer ||
-                             Array.Exists(answerButtons, b => b != null && b.Text == wrongAnswer.ToString()));
+                             answerButtons.Any(b => b != null && b.Text == wrongAnswer.ToString()));
 
                     answerButtons[i].Text = wrongAnswer.ToString();
                     answerButtons[i].Tag = false;
@@ -201,22 +192,23 @@ namespace MathMiniGames.Forms
             if (isCorrect)
             {
                 score += 10;
-                lblScore.Text = $"Ball: {score}";
-                timeLeft += 3; 
-                lblTime.Text = $"Vaqt: {timeLeft}";
+                timeLeft += 3;
                 lblResult.Text = "To'g'ri!";
                 lblResult.ForeColor = Color.Green;
             }
             else
             {
+                timeLeft -= 2;
+                if (timeLeft < 0) timeLeft = 0;
                 lblResult.Text = $"Xato! To'g'ri javob: {correctAnswer}";
                 lblResult.ForeColor = Color.Red;
-                timeLeft -= 2; 
-                if (timeLeft < 0) timeLeft = 0;
-                lblTime.Text = $"Vaqt: {timeLeft}";
             }
+
+            lblScore.Text = $"Ball: {score}";
+            lblTime.Text = $"Vaqt: {timeLeft}";
             GenerateQuestion();
         }
+
         private void SaveGameStats()
         {
             try
@@ -226,16 +218,14 @@ namespace MathMiniGames.Forms
                     connection.Open();
                     string query = "INSERT INTO GameStats (UserID, GameName, Score, Difficulty, TimeTaken, DatePlayed) " +
                                    "VALUES (@UserID, @GameName, @Score, @Difficulty, @TimeTaken, @DatePlayed)";
-
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@UserID", currentUserID); 
-                        command.Parameters.AddWithValue("@GameName", "Sonni top"); 
-                        command.Parameters.AddWithValue("@Score", score); 
+                        command.Parameters.AddWithValue("@UserID", currentUserID);
+                        command.Parameters.AddWithValue("@GameName", "Sonni top");
+                        command.Parameters.AddWithValue("@Score", score);
                         command.Parameters.AddWithValue("@Difficulty", difficulty);
-                        command.Parameters.AddWithValue("@TimeTaken", 30 - timeLeft); 
-                        command.Parameters.AddWithValue("@DatePlayed", DateTime.Now); 
-
+                        command.Parameters.AddWithValue("@TimeTaken", 30 - timeLeft);
+                        command.Parameters.AddWithValue("@DatePlayed", DateTime.Now);
                         command.ExecuteNonQuery();
                     }
                 }
@@ -246,6 +236,5 @@ namespace MathMiniGames.Forms
                 MessageBox.Show("Xatolik yuz berdi: " + ex.Message, "Xato", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
     }
 }
